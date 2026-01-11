@@ -1,0 +1,37 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main() {
+    cout << "Enter program (end with $ on a new line):\n";
+    string line;
+    int lineNo = 0;
+    bool insideBlock = false;
+
+    while (getline(cin, line)) {
+        if (line == "$") break;
+        lineNo++;
+
+        // If we are already inside /* ... */
+        if (insideBlock) {
+            cout << "Comment on line: " << lineNo << "\n";
+            if (line.find("*/") != string::npos) insideBlock = false;
+            continue;
+        }
+
+        // Check // comment
+        if (line.find("//") != string::npos) {
+            cout << "Comment on line: " << lineNo << "\n";
+            continue;
+        }
+
+        // Check /* comment
+        size_t start = line.find("/*");
+        if (start != string::npos) {
+            cout << "Comment on line: " << lineNo << "\n";
+            if (line.find("*/", start + 2) == string::npos) insideBlock = true;
+        }
+    }
+
+    return 0;
+}

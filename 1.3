@@ -3,27 +3,28 @@
 #include <cctype>
 using namespace std;
 
-bool isConstant(const string &s) {
+bool isIdentifier(const string &s) {
     if (s.empty()) return false;
-
-    int i = 0;
-    if (s[0] == '+' || s[0] == '-') i++;
-
-    if (i == (int)s.size()) return false; // only + or -
-
-    for (; i < (int)s.size(); i++) {
-        if (!isdigit(s[i])) return false;
-    }
+    if (!(isalpha(s[0]) || s[0] == '_')) return false;
+    for (char c : s) if (!(isalnum(c) || c == '_')) return false;
     return true;
+}
+
+bool isKeyword(const string &s) {
+    string kw[] = {"int","float","char","double","static","for","while","do",
+                   "switch","case","if","then","else","endif","return"};
+    for (string k : kw) if (s == k) return true;
+    return false;
 }
 
 int main() {
     string s;
-    cout << "Enter a value: ";
+    cout << "Enter a word: ";
     cin >> s;
 
-    if (isConstant(s)) cout << s << " is a Constant\n";
-    else cout << s << " is NOT a Constant\n";
+    if (isKeyword(s)) cout << s << " is a Keyword\n";
+    else if (isIdentifier(s)) cout << s << " is an Identifier\n";
+    else cout << s << " is neither Keyword nor Identifier\n";
 
     return 0;
 }

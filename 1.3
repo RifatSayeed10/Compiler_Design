@@ -1,30 +1,43 @@
 #include <iostream>
+#include <fstream>
 #include <string>
+#include <set>
 #include <cctype>
 using namespace std;
 
-bool isIdentifier(const string &s) {
-    if (s.empty()) return false;
-    if (!(isalpha(s[0]) || s[0] == '_')) return false;
-    for (char c : s) if (!(isalnum(c) || c == '_')) return false;
-    return true;
-}
-
-bool isKeyword(const string &s) {
-    string kw[] = {"int","float","char","double","static","for","while","do",
-                   "switch","case","if","then","else","endif","return"};
-    for (string k : kw) if (s == k) return true;
+bool isKeyword(string s) {
+    string kw[] = {"int","float","char","double","if","else","for",
+                   "while","do","switch","case","return","static"};
+    for (string k : kw)
+        if (s == k) return true;
     return false;
 }
 
+bool isIdentifier(string s) {
+    if (!(isalpha(s[0]) || s[0] == '_')) return false;
+    for (char c : s)
+        if (!(isalnum(c) || c == '_')) return false;
+    return true;
+}
+
 int main() {
-    string s;
-    cout << "Enter a word: ";
-    cin >> s;
+    ifstream fin("input.txt");
+    string word;
+    set<string> keywords, identifiers;
 
-    if (isKeyword(s)) cout << s << " is a Keyword\n";
-    else if (isIdentifier(s)) cout << s << " is an Identifier\n";
-    else cout << s << " is neither Keyword nor Identifier\n";
+    while (fin >> word) {
+        if (isKeyword(word))
+            keywords.insert(word);
+        else if (isIdentifier(word))
+            identifiers.insert(word);
+    }
 
+    cout << "Keywords:\n";
+    for (auto k : keywords) cout << k << " ";
+
+    cout << "\nIdentifiers:\n";
+    for (auto i : identifiers) cout << i << " ";
+
+    fin.close();
     return 0;
 }

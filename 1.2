@@ -1,21 +1,29 @@
 #include <iostream>
 #include <string>
+#include <cctype>
 using namespace std;
+
+bool isConstant(const string &s) {
+    if (s.empty()) return false;
+
+    int i = 0;
+    if (s[0] == '+' || s[0] == '-') i++;
+
+    if (i == (int)s.size()) return false; // only + or -
+
+    for (; i < (int)s.size(); i++) {
+        if (!isdigit(s[i])) return false;
+    }
+    return true;
+}
 
 int main() {
     string s;
-    cout << "Enter a line: ";
-    getline(cin, s);
+    cout << "Enter a value: ";
+    cin >> s;
 
-    if (s.size() >= 2 && s[0] == '/' && s[1] == '/') {
-        cout << "Single-line comment (//)\n";
-    }
-    else if (s.size() >= 4 && s[0] == '/' && s[1] == '*' &&
-             s[s.size()-2] == '*' && s[s.size()-1] == '/') {
-        cout << "Multi-line comment (/* */)\n";
-    }
-    else {
-        cout << "Not a comment\n";
-    }
+    if (isConstant(s)) cout << s << " is a Constant\n";
+    else cout << s << " is NOT a Constant\n";
+
     return 0;
 }

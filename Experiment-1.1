@@ -1,25 +1,31 @@
 #include <iostream>
+#include <fstream>
 #include <string>
+#include <set>
 #include <cctype>
 using namespace std;
 
-bool isIdentifier(const string &s) {
-    if (s.empty()) return false;
+bool isIdentifier(string s) {
     if (!(isalpha(s[0]) || s[0] == '_')) return false;
-
-    for (char c : s) {
+    for (char c : s)
         if (!(isalnum(c) || c == '_')) return false;
-    }
     return true;
 }
 
 int main() {
-    string s;
-    cout << "Enter a word: ";
-    cin >> s;
+    ifstream fin("input.txt");
+    string word;
+    set<string> identifiers;
 
-    if (isIdentifier(s)) cout << s << " is an Identifier\n";
-    else cout << s << " is NOT an Identifier\n";
+    while (fin >> word) {
+        if (isIdentifier(word))
+            identifiers.insert(word);
+    }
 
+    cout << "Identifiers:\n";
+    for (auto id : identifiers)
+        cout << id << " ";
+
+    fin.close();
     return 0;
 }

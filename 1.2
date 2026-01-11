@@ -1,29 +1,32 @@
 #include <iostream>
+#include <fstream>
 #include <string>
+#include <set>
 #include <cctype>
 using namespace std;
 
-bool isConstant(const string &s) {
-    if (s.empty()) return false;
-
+bool isConstant(string s) {
     int i = 0;
     if (s[0] == '+' || s[0] == '-') i++;
-
-    if (i == (int)s.size()) return false; // only + or -
-
-    for (; i < (int)s.size(); i++) {
+    for (; i < s.length(); i++)
         if (!isdigit(s[i])) return false;
-    }
     return true;
 }
 
 int main() {
-    string s;
-    cout << "Enter a value: ";
-    cin >> s;
+    ifstream fin("input.txt");
+    string word;
+    set<string> constants;
 
-    if (isConstant(s)) cout << s << " is a Constant\n";
-    else cout << s << " is NOT a Constant\n";
+    while (fin >> word) {
+        if (isConstant(word))
+            constants.insert(word);
+    }
 
+    cout << "Constants:\n";
+    for (auto c : constants)
+        cout << c << " ";
+
+    fin.close();
     return 0;
 }

@@ -1,37 +1,29 @@
 #include <iostream>
 #include <string>
+#include <cctype>
 using namespace std;
 
-int main() {
-    cout << "Enter program (end with $ on a new line):\n";
-    string line;
-    int lineNo = 0;
-    bool insideBlock = false;
+bool isConstant(const string &s) {
+    if (s.empty()) return false;
 
-    while (getline(cin, line)) {
-        if (line == "$") break;
-        lineNo++;
+    int i = 0;
+    if (s[0] == '+' || s[0] == '-') i++;
 
-        // If we are already inside /* ... */
-        if (insideBlock) {
-            cout << "Comment on line: " << lineNo << "\n";
-            if (line.find("*/") != string::npos) insideBlock = false;
-            continue;
-        }
+    if (i == (int)s.size()) return false; // only + or -
 
-        // Check // comment
-        if (line.find("//") != string::npos) {
-            cout << "Comment on line: " << lineNo << "\n";
-            continue;
-        }
-
-        // Check /* comment
-        size_t start = line.find("/*");
-        if (start != string::npos) {
-            cout << "Comment on line: " << lineNo << "\n";
-            if (line.find("*/", start + 2) == string::npos) insideBlock = true;
-        }
+    for (; i < (int)s.size(); i++) {
+        if (!isdigit(s[i])) return false;
     }
+    return true;
+}
+
+int main() {
+    string s;
+    cout << "Enter a value: ";
+    cin >> s;
+
+    if (isConstant(s)) cout << s << " is a Constant\n";
+    else cout << s << " is NOT a Constant\n";
 
     return 0;
 }

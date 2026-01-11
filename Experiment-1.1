@@ -3,32 +3,23 @@
 #include <cctype>
 using namespace std;
 
+bool isIdentifier(const string &s) {
+    if (s.empty()) return false;
+    if (!(isalpha(s[0]) || s[0] == '_')) return false;
+
+    for (char c : s) {
+        if (!(isalnum(c) || c == '_')) return false;
+    }
+    return true;
+}
+
 int main() {
     string s;
-    cout << "Enter a comment line: ";
-    getline(cin, s);
+    cout << "Enter a word: ";
+    cin >> s;
 
-    bool isCom = false;
-    int letters = 0;
-
-    if (s.size() >= 2 && s[0] == '/' && s[1] == '/') {
-        isCom = true;
-        for (int i = 2; i < (int)s.size(); i++)
-            if (isalpha((unsigned char)s[i])) letters++;
-    }
-    else if (s.size() >= 4 && s[0] == '/' && s[1] == '*' &&
-             s[s.size()-2] == '*' && s[s.size()-1] == '/') {
-        isCom = true;
-        for (int i = 2; i < (int)s.size()-2; i++)
-            if (isalpha((unsigned char)s[i])) letters++;
-    }
-
-    if (isCom) {
-        cout << "It is a comment\n";
-        cout << "Letters in comment: " << letters << "\n";
-    } else {
-        cout << "It is NOT a comment\n";
-    }
+    if (isIdentifier(s)) cout << s << " is an Identifier\n";
+    else cout << s << " is NOT an Identifier\n";
 
     return 0;
 }

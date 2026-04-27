@@ -1,75 +1,118 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-bool isKey(string s) {
-    string k[] = {"int","float","using","namespace","std","return","cout","if","else","while","for"};
-    for(string x : k) if(x == s) return true;
-    return false;
+vector<string> keywords = {
+    "int", "float", "double", "char", "bool", "void", "if", "else", "then",
+    "endif", "while", "for", "do", "switch", "case", "static", "print", "return"
+};
+
+bool isKeyword(const string &s){
+    return find(keywords.begin(), keywords.end(), s) != keywords.end();
 }
 
-bool isOp(char c) {
-    string op = "+-*/%=<>!";
-    return op.find(c) != string::npos;
+bool isOperator(char c){
+    string ops = "+-*/%=><!";
+    return ops.find(c) != string::npos;
 }
 
-bool isSp(char c) {
-    string sp = "(){}[];,";
-    return sp.find(c) != string::npos;
+bool isSpecial(char c){
+    string specials = "(){},;[]";
+    return specials.find(c) != string::npos;
 }
 
-int main() {
+bool isIdentifierStart(char c){
+    return isalpha(c) || c == '_' || c == '$';
+}
+
+bool isIdentifierChar(char c){
+    return isalnum(c) || c == '_' || c == '$';
+}
+
+int main(){
+
     string code, line;
-    cout << "Enter code and end with ctrl+z:\n";
 
-    while(getline(cin, line)) code += line + "\n";
+    cout << "Enter code (type END to finish):\n";
 
-    set<string> keywords, constants, identifiers, symbols, operators;
-    string token = "";
+    // multi-line input
+    while(getline(cin, line)){
+        if(line == "END") break;
+        code += line + "\n";
+    }
 
-    for(int i = 0; i < code.size(); i++) {
+    // remove comments
+    regex blockComment(R"(/\*[\s\S]*?\*/)");
+    code = regex_replace(code, blockComment, "");
+
+    regex singleComment(R"(//.*)");
+    code = regex_replace(code, singleComment, "");
+
+    vector<string> identifiers, constants, keywordlist;
+    vector<char> operators, specials;
+
+    int n = code.size();
+
+    for(int i = 0; i < n; i++){
         char c = code[i];
 
-        if(isalnum(c) || c == '_'|| c=='.') token += c;
-        else {
-            if(token != "") {
-                if(isKey(token)) keywords.insert(token);
-                else if(isdigit(token[0])) constants.insert(token);
-                else identifiers.insert(token);
-                token = "";
-            }
+        if(isspace(c)) continue;
 
-            if(isOp(c)) {
-                string op = string(1, c);
-                if(i + 1 < code.size()) {
-                    string two = op + code[i + 1];
-                    if(two == "==" || two == "<=" || two == ">=" || two == "!=" || two == "++" || two == "--") {
-                        operators.insert(two);
-                        i++;
-                        continue;
-                    }
-                }
-                operators.insert(op);
+        // Identifier or keyword
+        if(isIdentifierStart(c)){
+            string word = "";
+            while(i < n && isIdentifierChar(code[i])){
+                word += code[i];
+                i++;
             }
-            else if(isSp(c)) {
-                symbols.insert(string(1, c));
+            i--;
+
+            if(isKeyword(word))
+                keywordlist.push_back(word);
+            else
+                identifiers.push_back(word);
+        }
+
+        // Constant
+        else if(isdigit(c)){
+            string num = "";
+            while(i < n && isdigit(code[i])){
+                num += code[i];
+                i++;
             }
+            i--;
+            constants.push_back(num);
+        }
+
+        // Operator
+        else if(isOperator(c)){
+            operators.push_back(c);
+        }
+
+        // Special symbol
+        else if(isSpecial(c)){
+            specials.push_back(c);
         }
     }
 
-    if(token != "") {
-        if(isKey(token)) keywords.insert(token);
-        else if(isdigit(token[0])) constants.insert(token);
-        else identifiers.insert(token);
-    }
+    // Output
+    cout << "\n=== Lexical Analysis Result ===\n";
 
-    cout << "keywords: ";
-    for(auto x : keywords) cout << x << " ";
-    cout << "\nidentifiers: ";
-    for(auto x : identifiers) cout << x << " ";
-    cout << "\noperators: ";
-    for(auto x : operators) cout << x << " ";
-    cout << "\nconstants: ";
-    for(auto x : constants) cout << x << " ";
-    cout << "\nspecial symbols: ";
-    for(auto x : symbols) cout << x << " ";
+    cout << "Keywords: ";
+    for(auto &k : keywordlist) cout << k << " ";
+
+    cout << "\nIdentifiers: ";
+    for(auto &id : identifiers) cout << id << " ";
+
+    cout << "\nConstants: ";
+    for(auto &c : constants) cout << c << " ";
+
+    cout << "\nOperators: ";
+    for(auto &op : operators) cout << op << " ";
+
+    cout << "\nSpecial Symbols: ";
+    for(auto &sp : specials) cout << sp << " ";
+
+    cout << "\n";
+
+    return 0;
 }

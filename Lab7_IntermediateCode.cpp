@@ -1,77 +1,82 @@
-#include <iostream>
-#include <stack>
+#include<bits/stdc++.h>
 using namespace std;
+int step = 1;
 
-int prec(char op)
-{
-    if (op == '*' || op == '/')
-        return 2;
-    if (op == '+' || op == '-')
-        return 1;
-    return 0;
+int precedence(char op){
+    if(op=='+'||op=='-')
+    return 1;
+    if(op=='/'||op=='*')
+    return 2;
+ return 0;
 }
 
-int main()
-{
-    string expr, post = "";
-    cin >> expr;
+string infixtopostfix(string infix){
+    stack<char>st;
+    string postfix="";
 
-    char lhs = expr[0];
-    string rhs = expr.substr(2);
-
-    stack<char> op;
-
-    // infix → postfix
-    for (char c : rhs)
-    {
-        if (isalnum(c))
-            post += c;
-        else if (c == '(')
-            op.push(c);
-        else if (c == ')')
-        {
-            while (op.top() != '(')
-            {
-                post += op.top();
-                op.pop();
+    for(char c:infix){
+        if(isalnum(c)){
+            postfix+=c;
+        }else if(c=='('){
+            st.push(c);
+        }else if(c==')'){
+            while(!st.empty()&& st.top()!='('){
+                postfix+=st.top();
+                st.pop();
             }
-            op.pop();
-        }
-        else
-        {
-            while (!op.empty() && prec(op.top()) >= prec(c))
-            {
-                post += op.top();
-                op.pop();
+            st.pop();
+        }else{
+           while(!st.empty() && precedence(st.top()) >= precedence(c)){
+                postfix+=st.top();
+                st.pop();
             }
-            op.push(c);
+            st.push(c);
         }
     }
-    while (!op.empty())
-    {
-        post += op.top();
-        op.pop();
+    while(!st.empty()){
+        postfix+=st.top();
+        st.pop();
     }
+    return postfix;
+}
 
-    // postfix → TAC
-    stack<string> st;
-    int t = 1;
+string generateTAC(string postfix){
+    stack<string>st;
+    int tempcount=1;
+    for(char c:postfix){
+        if(isalnum(c)){
+            st.push(string(1,c));
+        }else{
+            string op2=st.top();
+            st.pop();
+            string op1=st.top();
+            st.pop();
 
-    for (char c : post)
-    {
-        if (isalnum(c))
-            st.push(string(1, c));
-        else
-        {
-            string b = st.top();
-            st.pop();
-            string a = st.top();
-            st.pop();
-            string temp = "t" + to_string(t++);
-            cout << temp << " = " << a << " " << c << " " << b << endl;
+            string temp="t"+to_string(tempcount++);
+            cout<<step++ << ". "<<temp<< " = "<<op1<<" "<<c<<" "<<op2<<endl;
             st.push(temp);
         }
-    }
 
-    cout << lhs << " = " << st.top();
+    }
+    return st.top();
+}
+int main(){
+    string input;
+    cout<<"Enter expression: ";
+    getline(cin,input);
+
+    input.erase(remove(input.begin(),input.end(),' '),input.end());
+
+    int pos=input.find('=');
+    string lhs=input.substr(0,pos);
+    string rhs=input.substr(pos+1);
+
+    string postfix=infixtopostfix(rhs);
+    cout<<"Postfix: "<<postfix<<endl;
+    cout<<"\nThree Address code: "<<endl;
+
+    string finaltemp=generateTAC(postfix);
+
+    cout<<step++<< ". "<<lhs<<" = "<<finaltemp<<endl;
+    return 0;
 }

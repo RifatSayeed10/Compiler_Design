@@ -1,0 +1,20 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ifstream f("input.txt");
+    string code((istreambuf_iterator<char>(f)), istreambuf_iterator<char>());
+
+    regex comment(R"(//[^\n]*|/\*[\s\S]*?\*/)");
+
+    cout << "Comments:\n";
+    for (sregex_iterator it(code.begin(), code.end(), comment), end; it != end; ++it)
+        cout << it->str() << "\n";
+
+    string noComment = regex_replace(code, comment, "");
+
+    cout << "\nCode without comments:\n";
+    cout << noComment;
+
+    return 0;
+}
